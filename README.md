@@ -5,4 +5,7 @@ Uses the theriak G-minimization algorithm to generate phase properties during pr
 
 Original code written by David Moynihan in 2011, published as Moynihan and Pattison (2013).
 
-Updates by Eric to the original 2011 code include improved efficiency by removing redunant code and updating optimization criteria (calculation time reduced 70%), many new features for more in-depth analysis, improved UX.
+Updates by Eric to the original 2011 code include 
+1. improved efficiency by removing redunant code and updating optimization criteria (calculation time reduced 70%)
+2. many new features for more in-depth analysis
+3. improved UX

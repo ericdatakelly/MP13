@@ -1,0 +1,73 @@
+Moynihan and Pattison (2013, “MP13”) P-T Path Program "TheriakPTpath"
+Version EDK20160919
+
+Moynihan, D.P., and Pattison, D.R.M. (2013) An automated method for the calculation of P-T paths from garnet zoning, with application to metapelitic schist from the Kootenay Arc, British Columbia, Canada. Journal of Metamorphic Geology, 31, 525–548.
+
+Modified by Eric Kelly
+
+
+New in this version:
+----------------------------------------------------------------------------------------
+1. Some output files are now comma delimited and end with .csv to make it easier to open the file with a spreadshet in Windows (just double-click).  This also helps in reading the files into other programs (e.g., Python scripts).
+Note: the loop table name now ends in .csv, so see the note below to ensure the program will run on your system.
+
+2. Some additional error comments were added to help you find the problem if an error occurs.
+
+3. If you choose to make one loop fractionation table for the whole PT path, the program will now read the output file called ThkOut.txt and extract the garnet free energy values.  The values are output to the 'allInfo'FromNode' file as GrtG(J).
+
+
+Instructions (and other notes) for Windows 7:
+----------------------------------------------------------------------------------------
+These are basic instructions for installing and running the MP13 Matlab program for determining a P-T path from garnet chemical zoning.  The program runs in Matlab but calls theriak for G minimization.
+
+The associated files are setup to run in Windows 7, and probably will not work with Windows 10 due to an issue with theriak not running from the Working folder.  However, it should run from the Programs folder instead, so if you can run theriak from the Programs folder, this program should be installed in the Programs folder.  The program is modified from the original MP13 script.  The search algorithm makes use of Matlab's fminsearch.m function, which is unchanged from MP13.  The only change that would impact the original algorithm is the addition of alternate misfit functions, but the original misfit function remains and is recommended for most cases.
+
+It is assumed that you already have an acceptable model for your rock.  In other words, you have produced a Domino plot that appropriately describes the stability fields and isopleth locations of the rock bulk composition for the beginning of garnet growth.  When you run TheriakPTpath, it will attempt to locate the P-T conditions of the isopleth intersections corresponding to the garnet chemical zoning profile from core to rim while incorporating garnet fractionation.  As the garnet components are removed from the bulk composition at each step, the chemical model will be adjusted to create the new effective bulk composition and could evolve to a point of instability, possibly indicating that your starting model needs adjustment.  If this occurs, reevaluate your starting bulk composition and try again. 
+
+Keep in mind that the garnet needs to contain preserved chemical zoning with little re-equilibration.  Generally this means that the rock did not exceed 600 C for a long duration.
+
+
+To install and run the program:
+
+1. Put the program files into your Theriak-Domino (TD) Working folder (or maybe your Programs folder if you work from that folder, espcially on Windows 10).  The files include:
+- TheriakPTpath.m
+- TheriakPTpath_misfit_function.m
+- TheriakPTpath_readParams.m
+- TheriakPTpath_readTable.m
+
+Also put these files in your Working directory:
+- Therin bulk composition file (e.g., ED01_therin.txt; The bulk comp must have these elements in this order: Si,Al,Fe,Mg,Mn,Ca,Na,K,Ti,H)
+- Dataset file (e.g., tcdb55c2d.txt)
+- Garnet zoning profile (e.g., ED01Profile.txt).  The steps are not associated with radius or volume, but they should be spaced so that there are not big jumps in chemistry (if possible).  Generally, 20-40 micron steps from EPMA data should work.  If there are big jumps in chemistry, the program may not be able to find the next step.  Interpolate if needed.
+- Rock parameters file (e.g., ED01_params.txt).
+
+
+2. Edit the parameters file.  The file has comments to guide you through it, but here are some additional notes:
+When specifiying the starting P-T values, be sure to choose a point outside of the garnet stability field but close to the first isopleth intersection.  This will help the program better approximate garnet fractionation, assuming equilibrium conditions and isopleths that represent the core of the garnet (not a garnet sectioned through the rim).
+
+The original misfit function from MP13 is a good starting point.  If you have difficulty, you may find that an alternate function is more appropriate.  The options are described in the comments, but generally the alternate functions use different combinations of endmembers to find the P-T path.  The normalization also can be turned off.  These options were added to account for specific characteristics of unique samples, so use them carefully.
+
+
+3. Run the program by starting Matlab, navigating to the Working folder, and typing “TheriakPTpath('Rock_parameters_file_name')” in the command window.  For example, type "TheriakPTpath('ED01_params.txt')" for sample ED01.  Some messages will be displayed.  If everything looks good, follow the instructions to continue.  A figure will open and the starting P-T point will be given in red.
+
+Outputfiles will be written to the Working folder (e.g., ED01_allCompsForTD.txt).  These files will be overwritten in the next run.  It is recommended to save these files to a unique folder before running the program again.
+
+Note that the garnet volumes reported (e.g., ED01_allInfoFromNode.txt) represent the cumulateive garnet fractionated during the run, yet each step calculated by TD represents an independent calculation of phase equilibria in which only the garnet shell is in equilibrium with the matrix.  To determine the modes of phases at any step, run theriak for the conditions of the step and renormalize the modes, including the calculated garnet volume.
+
+Your original therin file will be saved, if possible, but the program will overwrite it during the search.  Make a copy of it to keep it safe.
+
+Volumes of garnet and solids are output in the allInfoFromNode file.
+> SolidsVolCC = total volume in cm^3 of solid phases, including the outer shell of garnet in equilibrium with the matrix phases
+> GrtOuterVolCC = volume in cm^3 of garnet outer shell in equilibrium with matrix phases
+> GrtVolCC = total garnet fractionated (in cm^3) during a step between two P-T points.  Includes the outer shell.
+  Consider a PT path segment along PT1 to PT2 with 10 fractionation steps along the segment.  GrtVolCC is the sum of all Grt grown along the segment (in cm^3) and GrtOuterVolCC is the volume of only the Grt produced between steps 9 and 10.  Ideally, GrtOuterVolCC is in equilibrium with the other phases in the rock at step 10.  Each row of the output file represents the conditions of the rock at the end of each segment (equivalent to step 10 in this example), so I report the Grt volume in equilibrium with all other values in a row (GrtOuterVolCC) as well as all Grt produced since the previous row (GrtVolCC).  The two values will be the same if the loop step size is relatively large.  If the difference between the two PT points is smaller than the step size, the number of fractionation steps along a segment will be reduced to one.
+> GrtCumulMode = cumulative garnet mode from the start of the model run at step 1.  Due to round off error, these values may differ from those calculated from the other volume values listed here, but in tests with long runs (~40 steps) and variable step sizes, the error appears to be several orders of magnitude less than 1% of the garnet mode.
+
+You can choose to save the loop fractionation table from each step.  A loop table is described in the TD Guide under 'Theriak output files > tab-file'.
+There is also an option to calculate a loop table for the entire PT path.  However, this option will ignore the 'bulk Mn minimum' option, described below.
+
+There is an option to set a 'bulk Mn minimum' value.  This may be useful if the rock runs out of Mn early, even though evidence suggests that it probably shouldn't (e.g., garnet kept growing and still has some Sps component).  A typical value should be very small (e.g., 0.00001), and is intended to simply help garnet maintain stability while it grows under Mn-poor conditions, reflected in a near-zero Sps component in the zoning profile.
+
+The program uses the .csv extension for the loop table file.  This means that PC users can double click the loop table file (e.g., ThkTab.csv) and it will open easily as a spreadsheet with column headers lined up with data columns.  If the .txt extension is used (as previously, the file will open in a text editor that may be unable to align columns and headers.  This also prevents the need to tell the spreadsheet how to interpret the file (specifying delimiters, etc.).
+*** To ensure that the program runs, edit the loop table name in theriak.ini from ThkTab.txt to ThkTab.csv.  If you do not like this change, just use the .txt extension in the params file and the program should run correctly (let me know if this is not true in your case). If you do not want to change this filename for all of your projects, you can also make custom settings for each working folder.  Make a copy of theriak.ini and place it in a working folder.  Changes settings in this ini file to affect only the work you do in this folder.  The local theriak.ini will override theriak.ini in the programs folder.
+

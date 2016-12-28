@@ -1,9 +1,9 @@
-Input paramters for TheriakPTpath (Moynihan and Pattison, 2013), version: EDK20160919
+Input paramters for TheriakPTpath (Moynihan and Pattison, 2013), version: EDK20160510a
 A parameter must begin at the left margin and end with "%" (white space ignored).
 Parameters must appear on their unique line numbers (don't move them up or down).
 
 %% Enter starting information
-C:\Eric\TheriakDominoWIN\Programs	% Location of Theriak-Domino Programs folder (ending backslash is optional)
+C:\Users\Eric\TheriakDomino\Programs	% Location of Theriak-Domino Programs folder (ending backslash is optional)
 therin.txt				% Name of the therin file required by theriak on your system (see theriak.ini for default name)
 Test					% Run name (prepended to output files)
 Test_therin.txt				% Name of the bulk composition file for your rock (same format as therin)
@@ -40,9 +40,9 @@ iter					% Choose to display optimization output ("iter" = on, "off" = off)
 
 %% Choose saving conditions
 allCompsForTD.txt			% Output filename for all bulk compositions along the P-T path
-allInfoFromNode.csv			% Output filename for all P, T, bulk comp, garnet comp, etc.
+allInfoFromNode.txt			% Output filename for all P, T, bulk comp, garnet comp, etc.
 0					% Save the loop fractionation table from each step (0 = no, 1 = yes)
-1					% Make one loop fractionation table for the whole PT path (runs after all PT points determined).  Ignores bulk Mn minimum.  This option adds G-garnet to output table.
+1					% Make one loop fractionation table for the whole PT path (runs after all PT points determined).  Ignores bulk Mn minimum.
 0					% Make a Theria_g file (0 = no, 1 = yes)
 theriag_PTt.txt				% Theria_g filename
 saved_workspace.mat			% Name for saving the workspace
@@ -62,12 +62,11 @@ saved_workspace.mat			% Name for saving the workspace
 0					% Use only the differences between modeled and observed Xalm, Xprp, Xgrs, and Xsps
 
 % Choose to normalize differences in observed and modeled values (or just use absolute differences)
-1					% Normalize the values (0 = no, 1 = yes)
+1					% Normalize the values (0 = no, 1 = yes); normalization tends to bias low X and unnormalized tends to bias high X.
+1					% Add a penalty (multiplicative factor) to Xsps misfit (obs_Xsps * Xsps_misfit) to reduce bias toward Xsps in the search routine.
 
 %% These file names do not need to be edited, but you can if you want to.  They will be overwritten repeatedly during the run.
 ThkTab.csv				% Name of the loop table file used (internally) by theriak
-					% as specified in theriak.ini (this name must match the one in theriak.ini)
-ThkOut.txt				% Name of the output file written by theriak at the end of a calculation.
-					% (this name must match the one in theriak.ini)
+					% during the run (see theriak.ini for a default name)
 PTloopfrac.txt				% Name of the file that contains the commands used (internally)
 					% by theriak during the run

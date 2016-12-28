@@ -15,7 +15,7 @@ function TheriakPTpath(nameOfParamsFile)
 % For version tracking, a version number (date: YYYYMMDD)is now in effect.
 % Use letters (a, b, c, ...) for multiple changes in the same day.
 % Add initials to distinguish between updates from various users.
-TheriakPTpathVersion = 'EDK20160919';
+TheriakPTpathVersion = 'EDK20160510a';
 fprintf('\nTheriakPTpath version: %s\n',TheriakPTpathVersion)
 
 
@@ -59,8 +59,8 @@ fprintf('\nTheriakPTpath version: %s\n',TheriakPTpathVersion)
     useSpsGrs,...
     useDiff,...
     useNormalizedMisfitFun,...
+    useSpsPenalty,...
     loopOutputTable,...
-    theriakOutput,...
     PTloopCommandsFile...
     ] = TheriakPTpath_readParams(nameOfParamsFile);
 
@@ -81,7 +81,6 @@ else
 end
 
 loopOutputTablePWD = strcat(pwd,'\',loopOutputTable);
-theriakOutputPWD = strcat(pwd,'\',theriakOutput);
 savenamePWD = strcat(pwd,'\',saveName);
 allCompsForTDNamePWD = strcat(pwd,'\',allCompsForTDName);
 nodeOutputNamePWD = strcat(pwd,'\',nodeOutputName);
@@ -206,6 +205,10 @@ else
     error('\n%s\n%s\n',errMess1,errMess2)
 end
 
+if useSpsPenalty
+    fprintf('\nUsing Xsps penalty in misfit function.')
+end
+
 if bulk_Mn_minimum > 0
     fprintf('\n\nMinimum bulk Mn option is on.')
     fprintf('\nMn will not be allowed to drop below %g.',bulk_Mn_minimum)
@@ -222,10 +225,6 @@ fprintf('\nRunning...\n')
 % Remove old files to prevent partial overwrites
 if exist((loopOutputTablePWD), 'file') == 2
     delete(loopOutputTablePWD);
-end
-
-if exist((theriakOutputPWD), 'file') == 2
-    delete(theriakOutputPWD);
 end
 
 if exist(savenamePWD, 'file') == 2
@@ -349,9 +348,9 @@ for n = 1: num_points
     
     % select garnet composition from traverse
     alm = garnetcomp.data(n,2);
-    prp = garnetcomp.data(n,3);
-    sps = garnetcomp.data(n,4);
-    grs = garnetcomp.data(n,5);
+    py = garnetcomp.data(n,3);
+    spss = garnetcomp.data(n,4);
+    gr = garnetcomp.data(n,5);
     mgNumObs = garnetcomp.data(n,3)./...
         (garnetcomp.data(n,3)+garnetcomp.data(n,2));
     
@@ -365,9 +364,9 @@ for n = 1: num_points
     
     % Define the function
     functionOfPT = @(PT) TheriakPTpath_misfit_function(PT,T1,P1,...
-        alm,prp,sps,grs,mgNumObs,loopStep,spss_c,useMgNum,useFeNum,...
+        alm,py,spss,gr,mgNumObs,loopStep,spss_c,useMgNum,useFeNum,...
         useAlmPrpGrs,useDiff,useNormalizedMisfitFun,use4EndMembers,...
-        usePrpGrs,useSpsGrs,useAlmPrpSps,GrtName,GrtRemovePercent,...
+        usePrpGrs,useSpsGrs,useAlmPrpSps,useSpsPenalty,GrtName,GrtRemovePercent,...
         therinNamePWD,loopOutputTable,PTloopCommandsFile,figID2,drawCandidateFig);
     
     % Define the function options
@@ -378,7 +377,7 @@ for n = 1: num_points
     fminsearch(functionOfPT,PT,functionOptions);
     
     % Read the new values produced from the search
-    [Xalm,Xprp,Xsps,Xgrs,mgNum,V_SolidsCC,V_GrtCC,headers,data] = ...
+    [Xalm,Xpy,Xspss,Xgr,mgNum,V_SolidsCC,V_GrtCC,headers,data] = ...
         TheriakPTpath_readTable(loopOutputTable,therinNamePWD);
     
     % Calculate garnet mode
@@ -416,9 +415,9 @@ for n = 1: num_points
     node(1,n+1).blk_TI = data(end,ismember(headers{1,1}, 'blk_TI','legacy'));
     node(1,n+1).blk_H =  data(end,ismember(headers{1,1}, 'blk_H','legacy'));
     node(1,n+1).Xalm =   Xalm;
-    node(1,n+1).Xpy =    Xprp;
-    node(1,n+1).Xspss =  Xsps;
-    node(1,n+1).Xgr =    Xgrs;
+    node(1,n+1).Xpy =    Xpy;
+    node(1,n+1).Xspss =  Xspss;
+    node(1,n+1).Xgr =    Xgr;
     node(1,n+1).mgNumObs =       mgNumObs;
     node(1,n+1).mgNum =          mgNum;
     node(1,n+1).feNumObs =       1 - mgNumObs;
@@ -436,20 +435,17 @@ for n = 1: num_points
 
     % Save a copy of the loop table for the successful PT point
     if saveEachLoopTable
-        ext_index = strfind(loopOutputTable,'.');
-        ext_str = sscanf(loopOutputTable(ext_index:end),'%s');
-        loopFrac_name = strcat(runName,'_LoopFrac',num2str(n),ext_str);
-        copyfile(loopOutputTable,loopFrac_name);
+        copyfile(loopOutputTable,strcat(runName,'_LoopFrac',num2str(n),'.txt'));
     end
     
     % Record PT points along each loop for making full theriak loop table
     if saveOneLoopTable
         if n == 1
-            loopTP = [
+            loopPT = [
                 data(1:end,ismember(headers{1,1}, ':Temperature','legacy')) ...
                 data(1:end,ismember(headers{1,1}, ':Pressure','legacy'))];
         else
-            loopTP = [loopTP;
+            loopPT = [loopPT;
                 data(2:end,ismember(headers{1,1}, ':Temperature','legacy')) ...
                 data(2:end,ismember(headers{1,1}, ':Pressure','legacy'))];
         end
@@ -492,13 +488,13 @@ fprintf('\nP-T path search for "%s" finished at %s\n',runName,datestr(now))
 
 %% Run theriak to generate one big loop table along the whole PT path
 if saveOneLoopTable
-    fprintf('\nRunning theriak loop for whole PT path...\n')
+    fprintf('\nRunning theriak loop for whole PT path...')
     
     % write the loop fractionation file
     fid = fopen(PTloopCommandsFile, 'wt');
     fprintf(fid, 'REMOVE  %s  %#.5f\n',GrtName, GrtRemovePercent);
-    for n = 1:length(loopTP(:,1))
-        fprintf(fid, 'TP  %#.8f  %#.8f\n', loopTP(n,1), loopTP(n,2));
+    for n = 1:length(loopPT(:,1))
+        fprintf(fid, 'TP  %#.8f  %#.8f\n', loopPT(n,1), loopPT(n,2));
     end
     fclose(fid);
     
@@ -517,24 +513,7 @@ if saveOneLoopTable
     
     % Copy and rename the new tab file
     copyfile(loopOutputTablePWD,strcat(runName,'_',loopOutputTable))
-    fprintf('...loop table saved as %s.\n',strcat(runName,'_',loopOutputTable))
-    
-    % Get the free energy values of garnet for printing in the output table
-    % Also keep a copy of the output file
-    copyfile(theriakOutputPWD,strcat(runName,'_',theriakOutput))
-    fprintf('\nGetting garnet free energy values from %s...\n',theriakOutput)
-    nodeT = zeros(num_points,1);
-    nodeP = zeros(num_points,1);
-    for n = 1:num_points
-        nodeT(n) = node(1,n+1).T;
-        nodeP(n) = node(1,n+1).P;
-    end
-    G_grt = TheriakPTpath_readOut(...
-        theriakOutput,GrtName,nodeT,nodeP);
-    for n = 1:num_points
-        [node(1,n+1).G_grt] = G_grt(n);
-    end
-    fprintf('...Finished\n')
+    fprintf('\n...loop table saved as %s.\n',strcat(runName,'_',loopOutputTable))
 end
 
 %% Write file with all compositions formatted for Theriak-Domino
@@ -563,20 +542,20 @@ fclose(fid);
 fid = fopen(nodeOutputNamePWD, 'wt');
 % Write the header lines
 fprintf(fid,'TheriakPTpath version: %s\n',TheriakPTpathVersion);
-fprintf(fid,'No.,T(C),P(bars)');
-fprintf(fid,',Xalm,Xprp,Xsps,Xgrs,Mg#,Fe#');
-fprintf(fid,',obs_Xalm,obs_Xprp,obs_Xsps,obs_Xgrs,obs_Mg#,obs_Fe#');
-fprintf(fid,',GrtVolCC,GrtCumulMode,GrtG(J)');
-fprintf(fid,',blk_Si,blk_Al,blk_Fe,blk_Mg');
-fprintf(fid,',blk_Mn,blk_Ca,blk_Na,blk_K,blk_Ti,blk_H\n');
+fprintf(fid,'No.\tT(C)\tP(bars)');
+fprintf(fid,'\tXalm\tXprp\tXsps\tXgrs\tMg#\tFe#');
+fprintf(fid,'\tobs_Xalm\tobs_Xprp\tobs_Xsps\tobs_Xgrs\tobs_Mg#\tobs_Fe#');
+fprintf(fid,'\tGrtVolCC\tGrtCumulMode');
+fprintf(fid,'\tblk_Si\tblk_Al\tblk_Fe\tblk_Mg');
+fprintf(fid,'\tblk_Mn\tblk_Ca\tblk_Na\tblk_K\tblk_Ti\tblk_H\n');
 for n = 1:num_points
     % Step number and P-T
-    fprintf(fid,'%i,%#.8f,%#.8f',...
+    fprintf(fid,'%i\t%#.8f\t%#.8f',...
         n,...
         node(1,n+1).T,...
         node(1,n+1).P);
     % Modeled Grt comps
-    fprintf(fid,',%#.8g,%#.8g,%#.8g,%#.8g,%#.8g,%#.8g',...
+    fprintf(fid,'\t%#.8g\t%#.8g\t%#.8g\t%#.8g\t%#.8g\t%#.8g',...
         node(1,n+1).Xalm,...
         node(1,n+1).Xpy,...
         node(1,n+1).Xspss,...
@@ -584,7 +563,7 @@ for n = 1:num_points
         node(1,n+1).mgNum,...
         node(1,n+1).feNum);
     % Observed Grt comps
-    fprintf(fid,',%#.8g,%#.8g,%#.8g,%#.8g,%#.8g,%#.8g',...
+    fprintf(fid,'\t%#.8g\t%#.8g\t%#.8g\t%#.8g\t%#.8g\t%#.8g',...
         garnetcomp.data(n,2),...
         garnetcomp.data(n,3),...
         garnetcomp.data(n,4),...
@@ -592,18 +571,11 @@ for n = 1:num_points
         node(1,n+1).mgNumObs,...
         node(1,n+1).feNumObs);
     % Volumes
-    if saveOneLoopTable
-    fprintf(fid,',%#.10g,%#.10g,%#.8g',...
-        node(1,n+1).v_grtCC,...    % Edit node name elsewhere also
-        node(1,n+1).v_grtCumulMode,...
-        node(1,n+1).G_grt);
-    else
-            fprintf(fid,',%#.10g,%#.10g,%#.8g',...
+    fprintf(fid,'\t%#.10g\t%#.10g',...
         node(1,n+1).v_grtCC,...    % Edit node name elsewhere also
         node(1,n+1).v_grtCumulMode);
-    end
     % Bulk composition
-    fprintf(fid,',%#.9g,%#.9g,%#.9g,%#.9g,%#.9g,%#.9g,%#.9g,%#.9g,%#.9g,%#.9g\n',...
+    fprintf(fid,'\t%#.9g\t%#.9g\t%#.9g\t%#.9g\t%#.9g\t%#.9g\t%#.9g\t%#.9g\t%#.9g\t%#.9g\n',...
         node(1,n+1).blk_SI,...
         node(1,n+1).blk_AL,...
         node(1,n+1).blk_FE,...

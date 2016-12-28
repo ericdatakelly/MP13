@@ -1,26 +1,15 @@
 Moynihan and Pattison (2013, “MP13”) P-T Path Program "TheriakPTpath"
-Version EDK20160919
+Version EDK20160510
 
 Moynihan, D.P., and Pattison, D.R.M. (2013) An automated method for the calculation of P-T paths from garnet zoning, with application to metapelitic schist from the Kootenay Arc, British Columbia, Canada. Journal of Metamorphic Geology, 31, 525–548.
 
-Modified by Eric Kelly
+Instructions for Windows 7
+Eric Kelly
 
 
-New in this version:
-----------------------------------------------------------------------------------------
-1. Some output files are now comma delimited and end with .csv to make it easier to open the file with a spreadshet in Windows (just double-click).  This also helps in reading the files into other programs (e.g., Python scripts).
-Note: the loop table name now ends in .csv, so see the note below to ensure the program will run on your system.
-
-2. Some additional error comments were added to help you find the problem if an error occurs.
-
-3. If you choose to make one loop fractionation table for the whole PT path, the program will now read the output file called ThkOut.txt and extract the garnet free energy values.  The values are output to the 'allInfo'FromNode' file as GrtG(J).
-
-
-Instructions (and other notes) for Windows 7:
-----------------------------------------------------------------------------------------
 These are basic instructions for installing and running the MP13 Matlab program for determining a P-T path from garnet chemical zoning.  The program runs in Matlab but calls theriak for G minimization.
 
-The associated files are setup to run in Windows 7, and probably will not work with Windows 10 due to an issue with theriak not running from the Working folder.  However, it should run from the Programs folder instead, so if you can run theriak from the Programs folder, this program should be installed in the Programs folder.  The program is modified from the original MP13 script.  The search algorithm makes use of Matlab's fminsearch.m function, which is unchanged from MP13.  The only change that would impact the original algorithm is the addition of alternate misfit functions, but the original misfit function remains and is recommended for most cases.
+The associated files are setup to run in Windows 7, and probably will not work with Windows 10 due to an issue with theriak not running from the Working folder.  It might run from the Programs folder instead.  The program is modified from the original MP13 script, but most modifications are minor and only impact user experience.  The search algorithm makes use of Matlab's fminsearch.m function, which is unchanged.  The only change that would impact the original algorithm is the addition of alternate misfit functions, but the original misfit function remains and is recommended for most cases.
 
 It is assumed that you already have an acceptable model for your rock.  In other words, you have produced a Domino plot that appropriately describes the stability fields and isopleth locations of the rock bulk composition for the beginning of garnet growth.  When you run TheriakPTpath, it will attempt to locate the P-T conditions of the isopleth intersections corresponding to the garnet chemical zoning profile from core to rim while incorporating garnet fractionation.  As the garnet components are removed from the bulk composition at each step, the chemical model will be adjusted to create the new effective bulk composition and could evolve to a point of instability, possibly indicating that your starting model needs adjustment.  If this occurs, reevaluate your starting bulk composition and try again. 
 
@@ -29,17 +18,17 @@ Keep in mind that the garnet needs to contain preserved chemical zoning with lit
 
 To install and run the program:
 
-1. Put the program files into your Theriak-Domino (TD) Working folder (or maybe your Programs folder if you work from that folder, espcially on Windows 10).  The files include:
-- TheriakPTpath.m
-- TheriakPTpath_misfit_function.m
-- TheriakPTpath_readParams.m
-- TheriakPTpath_readTable.m
+1. Put the program files into your Theriak-Domino (TD) Working folder.  The files include:
+TheriakPTpath.m
+TheriakPTpath_misfit_function.m
+TheriakPTpath_readParams.m
+TheriakPTpath_readTable.m
 
 Also put these files in your Working directory:
-- Therin bulk composition file (e.g., ED01_therin.txt; The bulk comp must have these elements in this order: Si,Al,Fe,Mg,Mn,Ca,Na,K,Ti,H)
-- Dataset file (e.g., tcdb55c2d.txt)
-- Garnet zoning profile (e.g., ED01Profile.txt).  The steps are not associated with radius or volume, but they should be spaced so that there are not big jumps in chemistry (if possible).  Generally, 20-40 micron steps from EPMA data should work.  If there are big jumps in chemistry, the program may not be able to find the next step.  Interpolate if needed.
-- Rock parameters file (e.g., ED01_params.txt).
+Therin bulk composition file (e.g., ED01_therin.txt; The bulk comp must have elements in this order: Si,Al,Fe,Mg,Mn,Ca,Na,K,Ti,H)
+Dataset file (e.g., tcdb55c2d.txt)
+Garnet zoning profile (e.g., ED01Profile.txt).  The steps are not associated with radius or volume, but they should be spaced so that there are not big jumps in chemistry (if possible).  Generally, 20-40 micron steps from EPMA data should work.  If there are big jumps in chemistry, the program may not be able to find the next step.  Interpolate if needed.
+Rock parameters file (e.g., ED01_params.txt).
 
 
 2. Edit the parameters file.  The file has comments to guide you through it, but here are some additional notes:
@@ -68,6 +57,4 @@ There is also an option to calculate a loop table for the entire PT path.  Howev
 
 There is an option to set a 'bulk Mn minimum' value.  This may be useful if the rock runs out of Mn early, even though evidence suggests that it probably shouldn't (e.g., garnet kept growing and still has some Sps component).  A typical value should be very small (e.g., 0.00001), and is intended to simply help garnet maintain stability while it grows under Mn-poor conditions, reflected in a near-zero Sps component in the zoning profile.
 
-The program uses the .csv extension for the loop table file.  This means that PC users can double click the loop table file (e.g., ThkTab.csv) and it will open easily as a spreadsheet with column headers lined up with data columns.  If the .txt extension is used (as previously, the file will open in a text editor that may be unable to align columns and headers.  This also prevents the need to tell the spreadsheet how to interpret the file (specifying delimiters, etc.).
-*** To ensure that the program runs, edit the loop table name in theriak.ini from ThkTab.txt to ThkTab.csv.  If you do not like this change, just use the .txt extension in the params file and the program should run correctly (let me know if this is not true in your case). If you do not want to change this filename for all of your projects, you can also make custom settings for each working folder.  Make a copy of theriak.ini and place it in a working folder.  Changes settings in this ini file to affect only the work you do in this folder.  The local theriak.ini will override theriak.ini in the programs folder.
 

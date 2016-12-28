@@ -1,7 +1,7 @@
 function [misfit] = TheriakPTpath_misfit_function(PT,T1,P1,...
     alm,py,spss,gr,mgNumObs,loopStep,spss_c,useMgNum,useFeNum,...
     useAlmPrpGrs,useDiff,useNormalizedMisfitFun,use4EndMembers,...
-    usePrpGrs,useSpsGrs,useAlmPrpSps,GrtName,GrtRemovePercent,...
+    usePrpGrs,useSpsGrs,useAlmPrpSps,useSpsPenalty,GrtName,GrtRemovePercent,...
     therinNamePWD,loopOutputTable,PTloopCommandsFile,figID2,drawCandidateFig)
 
 % TheriakPTpath_misfit_function.m
@@ -50,19 +50,37 @@ fclose(fid);
 
 % Calculate the misfit value for each endmember
 if useNormalizedMisfitFun
-    misfit_alm = (alm-Xalm)/alm;
-    misfit_py = (py-Xpy)/py;
-    misfit_gr = (gr-Xgr)/gr;
-    misfit_spss = (spss-Xspss)/spss;
-    misfit_mgNum = (mgNumObs-mgNum)/mgNumObs;
-    misfit_feNum = 1 - misfit_mgNum;
+    if useSpsPenalty
+        misfit_alm = (alm-Xalm)/alm;
+        misfit_py = (py-Xpy)/py;
+        misfit_gr = (gr-Xgr)/gr;
+        misfit_spss = spss * (spss-Xspss)/spss; % This effectively removes normalization, but only for Sps
+        misfit_mgNum = (mgNumObs-mgNum)/mgNumObs;
+        misfit_feNum = 1 - misfit_mgNum;
+    else
+        misfit_alm = (alm-Xalm)/alm;
+        misfit_py = (py-Xpy)/py;
+        misfit_gr = (gr-Xgr)/gr;
+        misfit_spss = (spss-Xspss)/spss;
+        misfit_mgNum = (mgNumObs-mgNum)/mgNumObs;
+        misfit_feNum = 1 - misfit_mgNum;
+    end
 else
-    misfit_alm = alm-Xalm;
-    misfit_py = py-Xpy;
-    misfit_gr = gr-Xgr;
-    misfit_spss = spss-Xspss;
-    misfit_mgNum = mgNumObs-mgNum;
-    misfit_feNum =  1 - misfit_mgNum;
+    if useSpsPenalty
+        misfit_alm = alm-Xalm;
+        misfit_py = py-Xpy;
+        misfit_gr = gr-Xgr;
+        misfit_spss = spss * (spss-Xspss);
+        misfit_mgNum = mgNumObs-mgNum;
+        misfit_feNum =  1 - misfit_mgNum;
+    else
+        misfit_alm = alm-Xalm;
+        misfit_py = py-Xpy;
+        misfit_gr = gr-Xgr;
+        misfit_spss = spss-Xspss;
+        misfit_mgNum = mgNumObs-mgNum;
+        misfit_feNum =  1 - misfit_mgNum;
+    end
 end
 
 % Choose the misfit function to use

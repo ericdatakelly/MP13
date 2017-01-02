@@ -1,9 +1,9 @@
-Input paramters for TheriakPTpath (Moynihan and Pattison, 2013), version: EDK20160919
+Input paramters for TheriakPTpath (Moynihan and Pattison, 2013), version: EDK20160831
 A parameter must begin at the left margin and end with "%" (white space ignored).
 Parameters must appear on their unique line numbers (don't move them up or down).
 
 %% Enter starting information
-C:\Eric\TheriakDominoWIN\Programs	% Location of Theriak-Domino Programs folder (ending backslash is optional)
+C:\Users\Eric\TheriakDomino\Programs	% Location of Theriak-Domino Programs folder (ending backslash is optional)
 therin.txt				% Name of the therin file required by theriak on your system (see theriak.ini for default name)
 Test					% Run name (prepended to output files)
 Test_therin.txt				% Name of the bulk composition file for your rock (same format as therin)

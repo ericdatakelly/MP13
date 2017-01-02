@@ -15,7 +15,7 @@ function TheriakPTpath(nameOfParamsFile)
 % For version tracking, a version number (date: YYYYMMDD)is now in effect.
 % Use letters (a, b, c, ...) for multiple changes in the same day.
 % Add initials to distinguish between updates from various users.
-TheriakPTpathVersion = 'EDK20160919';
+TheriakPTpathVersion = 'EDK20160901x';
 fprintf('\nTheriakPTpath version: %s\n',TheriakPTpathVersion)
 
 
@@ -349,9 +349,9 @@ for n = 1: num_points
     
     % select garnet composition from traverse
     alm = garnetcomp.data(n,2);
-    prp = garnetcomp.data(n,3);
-    sps = garnetcomp.data(n,4);
-    grs = garnetcomp.data(n,5);
+    py = garnetcomp.data(n,3);
+    spss = garnetcomp.data(n,4);
+    gr = garnetcomp.data(n,5);
     mgNumObs = garnetcomp.data(n,3)./...
         (garnetcomp.data(n,3)+garnetcomp.data(n,2));
     
@@ -365,7 +365,7 @@ for n = 1: num_points
     
     % Define the function
     functionOfPT = @(PT) TheriakPTpath_misfit_function(PT,T1,P1,...
-        alm,prp,sps,grs,mgNumObs,loopStep,spss_c,useMgNum,useFeNum,...
+        alm,py,spss,gr,mgNumObs,loopStep,spss_c,useMgNum,useFeNum,...
         useAlmPrpGrs,useDiff,useNormalizedMisfitFun,use4EndMembers,...
         usePrpGrs,useSpsGrs,useAlmPrpSps,GrtName,GrtRemovePercent,...
         therinNamePWD,loopOutputTable,PTloopCommandsFile,figID2,drawCandidateFig);
@@ -378,7 +378,7 @@ for n = 1: num_points
     fminsearch(functionOfPT,PT,functionOptions);
     
     % Read the new values produced from the search
-    [Xalm,Xprp,Xsps,Xgrs,mgNum,V_SolidsCC,V_GrtCC,headers,data] = ...
+    [Xalm,Xpy,Xspss,Xgr,mgNum,V_SolidsCC,V_GrtCC,headers,data] = ...
         TheriakPTpath_readTable(loopOutputTable,therinNamePWD);
     
     % Calculate garnet mode
@@ -416,9 +416,9 @@ for n = 1: num_points
     node(1,n+1).blk_TI = data(end,ismember(headers{1,1}, 'blk_TI','legacy'));
     node(1,n+1).blk_H =  data(end,ismember(headers{1,1}, 'blk_H','legacy'));
     node(1,n+1).Xalm =   Xalm;
-    node(1,n+1).Xpy =    Xprp;
-    node(1,n+1).Xspss =  Xsps;
-    node(1,n+1).Xgr =    Xgrs;
+    node(1,n+1).Xpy =    Xpy;
+    node(1,n+1).Xspss =  Xspss;
+    node(1,n+1).Xgr =    Xgr;
     node(1,n+1).mgNumObs =       mgNumObs;
     node(1,n+1).mgNum =          mgNum;
     node(1,n+1).feNumObs =       1 - mgNumObs;
@@ -519,21 +519,21 @@ if saveOneLoopTable
     copyfile(loopOutputTablePWD,strcat(runName,'_',loopOutputTable))
     fprintf('...loop table saved as %s.\n',strcat(runName,'_',loopOutputTable))
     
-    % Get the free energy values of garnet for printing in the output table
+%     % Get the free energy values of garnet for printing in the output table
     % Also keep a copy of the output file
     copyfile(theriakOutputPWD,strcat(runName,'_',theriakOutput))
-    fprintf('\nGetting garnet free energy values from %s...\n',theriakOutput)
-    nodeT = zeros(num_points,1);
-    nodeP = zeros(num_points,1);
-    for n = 1:num_points
-        nodeT(n) = node(1,n+1).T;
-        nodeP(n) = node(1,n+1).P;
-    end
-    G_grt = TheriakPTpath_readOut(...
-        theriakOutput,GrtName,nodeT,nodeP);
-    for n = 1:num_points
-        [node(1,n+1).G_grt] = G_grt(n);
-    end
+%     fprintf('\nGetting garnet free energy values from %s...\n',theriakOutput)
+%     nodeT = zeros(num_points,1);
+%     nodeP = zeros(num_points,1);
+%     for n = 1:num_points
+%         nodeT(n) = node(1,n+1).T;
+%         nodeP(n) = node(1,n+1).P;
+%     end
+%     G_grt = TheriakPTpath_readOut(...
+%         theriakOutput,GrtName,nodeT,nodeP);
+%     for n = 1:num_points
+%         [node(1,n+1).G_grt] = G_grt(n);
+%     end
     fprintf('...Finished\n')
 end
 
@@ -566,7 +566,8 @@ fprintf(fid,'TheriakPTpath version: %s\n',TheriakPTpathVersion);
 fprintf(fid,'No.,T(C),P(bars)');
 fprintf(fid,',Xalm,Xprp,Xsps,Xgrs,Mg#,Fe#');
 fprintf(fid,',obs_Xalm,obs_Xprp,obs_Xsps,obs_Xgrs,obs_Mg#,obs_Fe#');
-fprintf(fid,',GrtVolCC,GrtCumulMode,GrtG(J)');
+% fprintf(fid,',GrtVolCC,GrtCumulMode,GrtG(J)');
+fprintf(fid,',GrtVolCC,GrtCumulMode');
 fprintf(fid,',blk_Si,blk_Al,blk_Fe,blk_Mg');
 fprintf(fid,',blk_Mn,blk_Ca,blk_Na,blk_K,blk_Ti,blk_H\n');
 for n = 1:num_points
@@ -592,16 +593,11 @@ for n = 1:num_points
         node(1,n+1).mgNumObs,...
         node(1,n+1).feNumObs);
     % Volumes
-    if saveOneLoopTable
-    fprintf(fid,',%#.10g,%#.10g,%#.8g',...
+    %fprintf(fid,',%#.10g,%#.10g,%#.8g',...
+    fprintf(fid,',%#.10g,%#.10g',...
         node(1,n+1).v_grtCC,...    % Edit node name elsewhere also
-        node(1,n+1).v_grtCumulMode,...
-        node(1,n+1).G_grt);
-    else
-            fprintf(fid,',%#.10g,%#.10g,%#.8g',...
-        node(1,n+1).v_grtCC,...    % Edit node name elsewhere also
-        node(1,n+1).v_grtCumulMode);
-    end
+        node(1,n+1).v_grtCumulMode);%,...
+%         node(1,n+1).G_grt);
     % Bulk composition
     fprintf(fid,',%#.9g,%#.9g,%#.9g,%#.9g,%#.9g,%#.9g,%#.9g,%#.9g,%#.9g,%#.9g\n',...
         node(1,n+1).blk_SI,...

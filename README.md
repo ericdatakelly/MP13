@@ -9,3 +9,5 @@ Updates by Eric to the original 2011 code include
 1. improved efficiency by removing redunant code and updating optimization criteria (calculation time reduced 70%)
 2. many new features for more in-depth analysis
 3. improved UX
+
+The main program is TheriakPTpath.m

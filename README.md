@@ -7,7 +7,6 @@ This program is used to fit a model to chemical time series data.  The data incl
 Tree Rings
 
 <img src="https://github.com/ericdavidkelly/MP13/blob/master/Tree_rings.jpg"/>
-
 (source unknown)
 
 
@@ -15,7 +14,6 @@ Tree Rings
 Garnet Crystal
 
 <img src="https://github.com/ericdavidkelly/MP13/blob/master/grt_crystal.jpg"/>
-
 (http://skywalker.cochise.edu/wellerr)
 
 

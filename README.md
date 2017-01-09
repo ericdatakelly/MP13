@@ -14,6 +14,8 @@ The main program is TheriakPTpath.m
 ### Example of final output from MP13 (with post-processing)
 Progressive states of the chemical system (usually a rock or magma) are optimized to achieve minimum chemical potential at each point, resulting in a path in P-T space that defines the history of the chemical system during residence in the Earth's crust.  The isopleths (e.g., Xalm) are lines of constant chemical components measured in the crystal, and their convergence defines a point along the path.  The isopleths for each panel correspond with the system when minimized for the P-T at the yellow point.  See Kelly et al. (2015, DOI: 10.1007/s00410-015-1171-2).
 
+
 <img src="https://github.com/ericdavidkelly/MP13/blob/master/example_output_model_fit.png"/>
+
 
 <img src="https://github.com/ericdavidkelly/MP13/blob/master/example_output_path.png"/>

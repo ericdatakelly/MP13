@@ -1,7 +1,9 @@
 # MP13 (aka TheriakPTpath)
 Chemical time series optimization for P-T path construction
 
-This program is used to fit a model to chemical time series data.  The data includes several time series of chemical variations frozen into crystals that formed in the Earth's crust.  Think of the crystals as little recording devices that preserve information about their chemical environment while they grow.  This is analogous to the study of tree rings to understand the history of the tree or forest.
+This program is used to fit a model to chemical time series data.  The data includes chemical variations frozen into crystals that formed in the Earth's crust.  These crystals provide detailed information about many chemical and physical processes that occur deep in the Earth, which helps geoscientists reconstruct Earth history, model geodynamic processes, understand the formation of important mineral resources, and much more.
+
+Think of the crystals as little recording devices that preserve information about their chemical environment while they grow.  This is analogous to the study of tree rings to understand the history of the tree or forest.
 
 
 Tree Rings
@@ -35,13 +37,21 @@ The original code was written by David Moynihan in 2011, published as Moynihan a
 The main program is TheriakPTpath.m
 
 ### Example of final output from MP13 (with post-processing)
-Progressive states of the chemical system (usually a rock or magma) are optimized to achieve minimum chemical potential at each point, resulting in a path in P-T space that defines the history of the chemical system during residence in the Earth's crust.  The isopleths (e.g., Xalm) are lines of constant chemical components measured in the crystal, and their convergence defines a point along the path assuming ideal conditions (chemical equilibrium).  The isopleths for each panel correspond with the system when minimized for the P-T at the yellow point.  See Kelly et al. (2015, DOI: 10.1007/s00410-015-1171-2).
+Progressive states of the chemical system (usually a rock or magma) are optimized to achieve minimum chemical potential at each point, resulting in a path in P-T space that defines the history of the chemical system during residence in the Earth's crust.  The isopleths (e.g., Xalm) are lines of constant chemical components measured in the crystal ...
+
 
 Garnet Chemical Zoning Profile and Model Prediction
 
 <img src="https://github.com/ericdavidkelly/MP13/blob/master/example_output_model_fit.png"/>
 
 
+... and their convergence defines a point along the path assuming ideal conditions (chemical equilibrium).  The isopleths for each panel in the figure below correspond with the system when minimized for the P-T at the yellow point.  See Kelly et al. (2015, DOI: 10.1007/s00410-015-1171-2).
+
+
 Resulting P-T Path
 
 <img src="https://github.com/ericdavidkelly/MP13/blob/master/example_output_path.png"/>
+
+
+These paths are highly detailed compared with previous methods, and they are helping to change the understanding of mountain forming processes, which also impacts the exploration and evaluation of mineral resources (like those that supply the materials in your computer).
+

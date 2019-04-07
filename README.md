@@ -1,5 +1,5 @@
 # TheriakPTpath (aka MP13)
-### Chemical time series optimization for P-T path construction
+### Background: Chemical time series optimization for P-T path construction
 
 This program is used to fit a model to chemical 'time series' data.  The data includes
 chemical variations frozen into crystals that formed in the Earth's crust.  These crystals
@@ -40,7 +40,7 @@ are associated with the variations in chemistry in the crystal.
 
 The original code was written by David Moynihan in 2011, published as Moynihan and
 Pattison (2013, DOI: 10.1111/jmg.12032,
- [pdf](https://www.ucalgary.ca/pattison/files/pattison/13moynihanptpath-jmg.pdf)).
+<a href="https://www.ucalgary.ca/pattison/files/pattison/13moynihanptpath-jmg.pdf" target="_blank">pdf</a>).
 
 
 ### Example of final output from MP13 (with post-processing)
@@ -56,7 +56,11 @@ Garnet Chemical Zoning Profile and Model Prediction
 
 
 ... and their convergence defines a point along the path assuming ideal conditions
-(chemical equilibrium).  The isopleths for each panel in the figure below correspond with the system when minimized for the P-T at the yellow point.  See Kelly et al. (2015, DOI: 10.1007/s00410-015-1171-2; [pdf](https://www.researchgate.net/profile/Michael_Wells5/publication/280667952_An_Early_Cretaceous_garnet_pressure-temperature_path_recording_synconvergent_burial_and_exhumation_from_the_hinterland_of_the_Sevier_orogenic_belt_Albion_Mountains_Idaho/links/55c0ebe708aec0e5f448fbae.pdf)).
+(chemical equilibrium).  The isopleths for each panel in the figure below correspond with
+the system when minimized for the P-T at the yellow point.  See Kelly et al.
+(2015, DOI: 10.1007/s00410-015-1171-2,
+<a href="https://www.researchgate.net/profile/Michael_Wells5/publication/280667952_An_Early_Cretaceous_garnet_pressure-temperature_path_recording_synconvergent_burial_and_exhumation_from_the_hinterland_of_the_Sevier_orogenic_belt_Albion_Mountains_Idaho/links/55c0ebe708aec0e5f448fbae.pdf" target="_blank">pdf</a>
+).
 
 
 Resulting P-T Path
@@ -78,7 +82,7 @@ Version EDK20160510 (Written for Windows 7)
 
 These are basic instructions for installing and running the MP13 Matlab program.
 The program runs in Matlab but calls
-[Theriak-Domino](https://titan.minpet.unibas.ch/minpet/theriak/theruser.html)
+<a href="https://titan.minpet.unibas.ch/minpet/theriak/theruser.html" target="_blank">Theriak-Domino</a>
 (TD) for G minimization.  It is assumed that you already have TD running on your
 system, and that you have the typical folders: Working and Programs.
 
@@ -202,5 +206,5 @@ this option will ignore the 'bulk Mn minimum' option, described below.
 runs out of Mn early, even though evidence suggests that it probably shouldn't (e.g.,
 garnet kept growing and still has some Sps component).  A typical value should be very
 small (e.g., 0.00001), and is intended to simply help garnet maintain stability while
-it grows under Mn-poor conditions, reflected in an observed near-zero Sps component 
+it grows under Mn-poor conditions, reflected in an observed near-zero Sps component
 in the zoning profile.

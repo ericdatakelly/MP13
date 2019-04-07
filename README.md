@@ -124,18 +124,18 @@ To install and run the program:
 
   * TheriakPTpath_readTable.m
 
-  * Therin bulk composition file (e.g., ED01_therin.txt; The bulk comp must have elements
+  * Therin bulk composition file (e.g., Test_therin.txt; The bulk comp must have elements
   in this order: Si,Al,Fe,Mg,Mn,Ca,Na,K,Ti,H)
 
   * Dataset file (e.g., tcdb55c2d.txt)
 
-  * Garnet zoning profile (e.g., ED01Profile.txt).  The steps are not associated with
+  * Garnet zoning profile (e.g., TestProfile.txt).  The steps are not associated with
 radius or volume, but they should be spaced so that there are not big jumps in chemistry
 (if possible).  Generally, 20-40 micron steps from EPMA data should work.  If there are
 big jumps in chemistry, the program may not be able to find the next step.  Interpolate
 if needed.
 
-  * Rock parameters file (e.g., ED01_params.txt).
+  * Rock parameters file (e.g., Test_params.txt).
 
 2\. Edit the parameters file.  The file has comments to guide you through it, but here are some additional notes:
 
@@ -151,27 +151,26 @@ endmembers to find the P-T path.  The normalization also can be turned off.  The
 were added to account for specific characteristics of unique samples, so use them carefully.
 
 3\. Run the program.
+  
   * Start Matlab
   * Navigate to the Working folder
-  * Type "TheriakPTpath('<rock_parameters_file_name>')" in the Matlab command window (case sensitive).
-
+  * Type "TheriakPTpath('_rock_parameters_file_name_')" in the Matlab command window (case sensitive).
+  
     Example:
-
     ```
-    TheriakPTpath('ED01_params.txt')
+    TheriakPTpath('Test_params.txt')
     ```
-
     Some messages will be displayed, and if everything looks good, follow the instructions
     to continue.  A figure window will open, and the starting P-T point will be shown as a red dot.
 
 4\. Examine output.
-  * Outputfiles will be written to the Working folder (e.g., ED01_allCompsForTD.txt).
-
-    __\*\* These files will be overwritten in the next run \*\*__
-
+  
+  * Outputfiles will be written to the Working folder (e.g., Test_allCompsForTD.txt).
+    
+    __\*\* These files will be overwritten in the next run \*\*__  
     _It is recommended to save these files to a unique folder before running the program again._
-
-  * Note that the garnet volumes reported (e.g., ED01_allInfoFromNode.txt) represent the
+  
+  * Note that the garnet volumes reported (e.g., Test_allInfoFromNode.txt) represent the
 cumulateive garnet fractionated during the run, yet each step calculated by TD represents
 an independent calculation of phase equilibria in which only the garnet shell is in
 equilibrium with the matrix.  To determine the modes of phases at any step, run theriak
@@ -180,8 +179,7 @@ volume.
 
   * Your original therin file will be saved, if possible, but...
 
-    __\*\* the program will overwrite therin during the search. \*\*__
-
+    __\*\* the program will overwrite therin during the search. \*\*__  
     _Make a copy of it for safety._
 
   * Volumes of garnet and solids are output in the allInfoFromNode file.
@@ -194,7 +192,7 @@ Includes the outer shell.
     GrtVolCC is the sum of all Grt grown along the segment, and GrtOuterVolCC is the volume of only the Grt produced between steps 9 and 10.  Ideally, GrtOuterVolCC is in equilibrium with the other phases in the rock at step 10.  Each row of the output file represents the conditions of the rock at the end of each segment (equivalent to step 10 in this example), so I report the Grt volume in equilibrium with all other values in a row (GrtOuterVolCC) as well as all Grt produced since the previous row (GrtVolCC).  The two values will be the same if the loop step size is relatively large.  If the difference between the two PT points is smaller than the step size, the number of fractionation steps along a segment will be reduced to one.
     * GrtCumulMode = cumulative garnet mode from the start of the model run at step 1.  Due
 to round off error, these values may differ from those calculated from the other volume
-values listed here, but in tests with long runs (~40 steps) and variable step sizes, the
+values listed here, but in tests with long runs (\~40 steps) and variable step sizes, the
 error appears to be several orders of magnitude less than 1% of the garnet mode.
 
   * You can choose to save the loop fractionation table from each step.  A loop table is
